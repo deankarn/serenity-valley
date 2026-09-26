@@ -46,7 +46,7 @@ Define it once, centrally, as reusable code for the whole codebase or organizati
 
 - Behind a request with a timeout — an API call, a gRPC call — no box inside the request retries. Every box surfaces retry advice, and the exposure box hands it to the caller, who owns the budget and the strategy.
 - Inside a queue consumer, retrying in the handler fights poll, lease, visibility, or commit timeouts. Surface the failure and use the consumer's own retry mechanism — a retry topic, delayed redelivery, nack with delay — with `retryAfter` as the delay.
-- In an unconstrained flow — a scheduled job with no deadline that nobody waits on — any level may retry.
+- In an unconstrained flow — a scheduled job with no deadline that nobody waits on — any one level may retry. Still exactly one per flow.
 
 The owner of the time budget is usually the origination point: whoever started the flow and owns its deadline — an end-user client, a queue consumer, a scheduled job. A service handling a request is never the origination point; its caller is.
 

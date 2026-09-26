@@ -31,7 +31,6 @@ Other teams have their own implementation diagrams. Do not draw theirs; draw the
 
 ## Choosing
 
-Diagrams at every altitude follow the main skill's rule: Mermaid in rendered documents, a small ASCII diagram or list in terminal replies.
-
-
 If asked to present, pitch, or document a design, ask who the audience is before picking an altitude, unless it is already obvious from the request. When a document has to serve more than one audience, separate the altitudes into distinct sections rather than blending them.
+
+Diagrams at every altitude follow the main skill's rule: Mermaid in rendered documents, a small ASCII diagram or list in terminal replies.
