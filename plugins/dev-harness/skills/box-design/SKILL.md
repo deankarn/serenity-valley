@@ -12,8 +12,12 @@ allowed-tools: Read Grep Glob
 Mode: `$mode`
 
 - Empty mode — apply the rules below to the current design or planning work. Do not run an audit.
-- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context (a proposed plan, or the repo). Audit only when the user asked for it.
-- `levels` — read `${CLAUDE_SKILL_DIR}/references/levels.md` for pitching or documenting a design at a given altitude.
+- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context (a proposed plan, or the repo). Audit only when the user asked for it. For a code audit, prefer delegating to the `dev-harness:design-auditor` agent when the Agent tool is available, so the sweep stays out of the main context.
+- `levels` — read `${CLAUDE_SKILL_DIR}/references/levels.md` for pitching or documenting a design at a given altitude, and `${CLAUDE_SKILL_DIR}/references/example.md` for one system drawn at every altitude.
+
+## Precedence
+
+These rules are general. Project and organization guidance — CLAUDE.md, repo conventions, another installed design skill — wins on specifics: package layout, naming, frameworks, document templates. Apply these rules where that guidance is silent. Where the two genuinely conflict on structure, follow the local guidance and flag the conflict to the user; do not resolve it silently.
 
 ## The model
 
@@ -91,6 +95,8 @@ Before proposing code for anything non-trivial, state the box breakdown. Keep it
 Then state **build order**. Leaf boxes (storage, external clients) are built first because they have no dependencies. Contracts at the edges are *defined* first even though the boxes are built last, because they are what other teams and parallel workstreams mock against. Call out explicitly which items are parallelizable and which are blocked. Integration is the final step.
 
 Where the work crosses a team or repo boundary, name the boundary and the contract that unblocks the other side.
+
+For the expected shape of a breakdown, see `${CLAUDE_SKILL_DIR}/references/example.md`.
 
 ## Test boundaries
 
