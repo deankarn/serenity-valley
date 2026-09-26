@@ -1,0 +1,12 @@
+{
+  "name": "dev-harness",
+  "description": "General software design and development practices: box decomposition, interface contracts, error contracts, and test boundaries.",
+  "author": {
+    "name": "Dean Karn",
+    "email": "claude@deankarn.com"
+  },
+  "homepage": "https://github.com/deankarn/claude-harness",
+  "repository": "https://github.com/deankarn/claude-harness",
+  "license": "MIT OR Apache-2.0",
+  "keywords": ["design", "architecture", "planning", "interface-contracts", "testing", "code-review"]
+}

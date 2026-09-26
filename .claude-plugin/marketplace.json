@@ -1,0 +1,16 @@
+{
+  "name": "big-damn-heroes",
+  "description": "Dean Karn's Claude Code plugins.",
+  "owner": {
+    "name": "Dean Karn",
+    "email": "claude@deankarn.com"
+  },
+  "plugins": [
+    {
+      "name": "dev-harness",
+      "source": "./plugins/dev-harness",
+      "description": "General software design and development practices: box decomposition, interface contracts, error contracts, and test boundaries.",
+      "category": "development"
+    }
+  ]
+}
