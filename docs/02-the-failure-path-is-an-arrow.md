@@ -20,7 +20,7 @@ The failure path is an arrow like any other. It's just the one that almost alway
 
 The fix starts simple: each box publishes one error type of its own. It carries a message and, where a caller genuinely needs to act differently, a reason — an enum the box owns, like `DuplicateEmail`. The API box maps the business logic's reasons to status codes without ever knowing what a database is.
 
-And one thing that is *not* an error: not finding something. That's part of the method's contract. Looking for one or more? Return an empty list. Looking for zero or one? Return an optional. Nothing failed, so there's no error to return.
+And one thing that is *not* an error: not finding something. That's part of the method's contract. Looking for one or more? Return an empty list. Looking for zero or one? Return an optional. Nothing failed, so there's no error to return. (How to name those methods so callers know which one they're getting is coming up in [Clean Code](03-clean-code.md).)
 
 Note: one type per *box*, not one per *operation*. It's tempting to make `SearchContactsError`, `CreateContactError`, `UpdateContactError`... resist! Per-operation types force a branch at every call site and make generic handling — like retries, which we'll get to — impossible.
 
@@ -367,3 +367,7 @@ The failure path is an arrow, so contract it like one: one error type per box, c
 The box knows *whether* to retry. The owner of the time budget decides *how*. Exactly one level does the retrying.
 
 And when in doubt — trace one failure through the whole flow, and count the attempts.
+
+---
+
+Next: [Clean Code](03-clean-code.md) — conventions worth adopting everywhere: `get` vs `find`, naming for the viewport, and never thinking about formatting again.
