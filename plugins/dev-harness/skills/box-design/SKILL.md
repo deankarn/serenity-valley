@@ -35,7 +35,7 @@ Each arrow between boxes is a contract.
 
 **Every box owns its own payload types.** The API request type is not the business-logic input. The database row type is not the API response. On day one they look identical; they always diverge. Sharing them welds the boxes together and kills independent evolution.
 
-**Nothing leaks across an arrow.** Driver errors, SQL, ORM entities, and result sets stay inside the storage box. HTTP status codes, headers, request objects, and framework context types stay inside the exposure box. Business logic sees domain types only.
+**Nothing leaks across an arrow.** Driver errors, SQL, ORM entities, and result sets stay inside the storage box. HTTP status codes, headers, request objects, and framework context types stay inside the exposure box. Business logic sees domain types only. A caller that imports a driver or client library just to inspect an error has already leaked — it pulls in a dependency it never calls.
 
 **Business logic is wiring.** If it constructs a query or reads a header, the responsibility is in the wrong box.
 
@@ -45,9 +45,11 @@ Each arrow between boxes is a contract.
 
 The failure path is an arrow like any other, and it is the one most often left uncontracted.
 
-Each box publishes one error type. It carries a **kind** drawn from a small closed vocabulary — not-found, conflict, transient, invalid, unavailable — and the kind is what callers dispatch on. One type per box, not one per operation: per-operation types force a branch at every call site and make generic retry handling impossible.
+Each box publishes one error type. It carries a message and, where callers genuinely need to act differently, a **reason** from a small enum the box owns. One type per box, not one per operation: per-operation types force a branch at every call site and make generic retry handling impossible.
 
-Classify at the boundary. Vendor codes, driver errors, and transport status codes are translated into the kind vocabulary inside the box that owns the technology. Put that classification in a reusable helper, not in the error type's ancestry — sharing by inheritance puts the driver's type into your contract and breaks backend swaps.
+**Absence is not an error.** Not finding something is part of the method's contract: return an empty collection when looking for one or more, and an optional when looking for zero or one.
+
+Classify at the boundary. Vendor codes, driver errors, and transport status codes are translated into the box's own error — its reason and its retry answer — inside the box that owns the technology. Put that classification in a reusable helper, not in the error type's ancestry — sharing by inheritance puts the driver's type into your contract and breaks backend swaps.
 
 Wrap deliberately. Three categories, three answers:
 
@@ -55,11 +57,9 @@ Wrap deliberately. Three categories, three answers:
 - **Programming defects** — bad argument, broken invariant, null dereference. Propagate raw. Wrapping a bug as an operational failure invites retrying a deterministic crash and buries the origin.
 - **Cancellation and environment signals** — shutdown, interruption, deadline from above, out of memory. Never wrap. They are not the box's to interpret, and swallowing cancellation breaks the caller's ability to stop work.
 
-Unrecognized but caught defaults to non-retryable. Retrying into an unknown failure is the unsafe direction.
+Preserve the cause. Keeping the underlying error reachable — cause chain, wrapped error, `source` — is not a leak: the box's error is the contract surface, the cause is diagnostic. Callers may unwrap for logging or a rare backend-specific decision, never in ordinary control flow. Across a process boundary the cause does not survive; the message, reasons, and retry advice do, so they have to stand on their own.
 
-Preserve the cause. Keeping the underlying error reachable — cause chain, wrapped error, `source` — is not a leak: the kind is the contract surface, the cause is diagnostic. Callers may unwrap for logging or a rare backend-specific decision, never in ordinary control flow. Across a process boundary only the kind survives, so the vocabulary has to stand on its own.
-
-Retry placement belongs in the contract. State whether the box retries internally before surfacing a transient failure. If the box and its caller both retry, attempts multiply.
+Retry advice is part of every box's error contract: every error type implements the shared `Retryable` interface, which is the only retry signal callers use. Whether to retry, how long to wait, and whether the box retries internally are owned by the `dev-harness:retry-contracts` skill — apply it alongside this one whenever a design has a failure path.
 
 ## Physical boundaries
 
@@ -85,14 +85,17 @@ Ship the test double with the box. Consumers mock their neighbours by contract, 
 
 ## When planning
 
-Before proposing code for anything non-trivial, state the box breakdown. Keep it compact — a list or small ASCII diagram, not an essay. For each box:
+Before proposing code for anything non-trivial, state the box breakdown. Keep it compact — a list or small diagram, not an essay. In terminal replies, draw a small ASCII diagram. When writing to a rendered Markdown file — design doc, ADR, PR description — use a Mermaid diagram instead. For each box:
 
 - name and responsibility
 - input type and output type
 - what it depends on
+- its error type, reasons, and retry advice (per `dev-harness:retry-contracts`)
 - how it will be tested
 
 Then state **build order**. Leaf boxes (storage, external clients) are built first because they have no dependencies. Contracts at the edges are *defined* first even though the boxes are built last, because they are what other teams and parallel workstreams mock against. Call out explicitly which items are parallelizable and which are blocked. Integration is the final step.
+
+Each box is a unit of work. Derive milestones from the blocked-by edges — a milestone is the point where blocked work becomes unblocked — rather than from calendar slices. The breakdown takes minutes; skipping it costs far more in rework.
 
 Where the work crosses a team or repo boundary, name the boundary and the contract that unblocks the other side.
 

@@ -10,7 +10,7 @@ Severity:
 - **test-boundary** — a box is testing something a neighbour already proves, or not testing what it owns.
 - **note** — smell, judgement call, or something to watch.
 
-Do not rewrite code during an audit unless asked. Report, then offer.
+Give each finding a one-line fix direction. Do not rewrite code during an audit unless asked. Report, then offer.
 
 ---
 
@@ -20,12 +20,12 @@ Do not rewrite code during an audit unless asked. Report, then offer.
 2. Does each box declare its own input and output types? Flag any type named as both an API payload and a business-logic or storage payload.
 3. Is business logic free of transport and storage concerns? Look for a plan step that has the logic layer building a query or reading a header.
 4. Are the edge contracts defined before the work that depends on them? A plan that builds the exposure layer before naming its contract blocks everyone downstream.
-5. Is build order leaf-first, with parallelizable and blocked items called out separately?
+5. Is build order leaf-first, with parallelizable and blocked items called out separately, and do milestones follow the blocked-by edges?
 6. Is there a stated test strategy per box, with neighbours mocked?
 7. Over-decomposition: does the box count match the size of the problem? Say so if it does not.
 8. Cross-team or cross-repo edges: is each one named, with the contract that unblocks the other side?
-9. Does each box name its error type and the kinds it can surface? A plan silent on the failure path has an uncontracted arrow.
-10. Is retry placement stated — does the box retry internally, or surface transient failures for the caller to retry?
+9. Does each box name its error type and the reasons it can surface? A plan silent on the failure path has an uncontracted arrow. Flag absence (not found) modelled as an error rather than an empty collection or optional.
+10. Retry behaviour: unless it has already run, invoke the `dev-harness:retry-contracts` skill with `verify` and run its plan audit. Report its findings in a separate section.
 11. Does the plan say which rung each boundary sits on (packages within a module, separate modules, versioned artifacts), and does the rung match the project's size?
 12. Where the language does not enforce direction, is there a stated enforcement mechanism? Flag a Java or TypeScript plan that relies on package layout alone.
 
@@ -48,15 +48,16 @@ Use Grep and Glob. Adapt the patterns to the language in the repo — these are 
 
 **Error contracts**
 - Driver, ORM, or HTTP client errors surfaced verbatim past their owning box.
+- A caller importing a driver or client library only to inspect an error.
+- Absence (not found) raised or returned as an error instead of an empty collection or optional.
 - One box's error type imported by a box two arrows away.
 - An error type whose ancestry includes a driver or framework type — the leak arrives through the supertype.
 - One error type per operation rather than one per box. Callers end up with a catch block per call site.
 - No catch-all on the box's public entry points, so unchecked or unexpected failures escape unclassified.
 - Cancellation, interruption, shutdown, or out-of-memory caught and wrapped as an operational failure.
 - Programming defects — bad argument, broken invariant, null dereference — wrapped and classified as retryable.
-- Unrecognized failures defaulting to retryable.
 - Cause chain dropped on wrap, or unwrapped in ordinary control flow rather than for logging.
-- Retry at both the box and its caller. Trace one transient failure through and count the attempts.
+- Retry behaviour: unless it has already run, invoke the `dev-harness:retry-contracts` skill with `verify` and run its code audit. Report its findings in a separate section.
 
 **Physical boundaries**
 - Exposure, business logic, and storage sharing a package or namespace.

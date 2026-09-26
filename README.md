@@ -11,7 +11,8 @@ General software design and development practices — how to design good softwar
 | Component | Type | Use |
 |---|---|---|
 | `box-design` | skill | Decompose systems into boxes with explicit interface, error, and test contracts. Auto-triggers when designing or planning. `/box-design verify` audits a plan or codebase; `/box-design levels` pitches a design at the right altitude. The bare name works unless another command is also named `box-design`; `/dev-harness:box-design` always works. |
-| `design-auditor` | agent | Read-only composability audit of a plan, diff, or repo in an isolated context. Returns findings only. |
+| `retry-contracts` | skill | Errors carry retry advice (`shouldRetry`, `retryAfter`) through one shared interface; exactly one level retries per flow, and never against an upstream time budget. Auto-triggers on retry, backoff, and transient-error work and alongside `box-design`. `/retry-contracts verify` audits a plan or codebase. |
+| `design-auditor` | agent | Read-only audit of a plan, diff, or repo against both skills' checklists, in an isolated context. Returns findings only. |
 
 ## Install
 
@@ -53,7 +54,7 @@ Useful if you sync dotfiles and want new machines set up with no commands. Add t
     "dev-harness@big-damn-heroes": true
   },
   "permissions": {
-    "allow": ["Skill(dev-harness:box-design)"]
+    "allow": ["Skill(dev-harness:box-design)", "Skill(dev-harness:retry-contracts)"]
   }
 }
 ```
@@ -79,7 +80,7 @@ If you previously installed `box-design` as a standalone skill, remove `~/.claud
 
 ### Permissions
 
-`design-auditor` loads its checklist by invoking the `box-design` skill, which prompts once. Approve the prompt, or add `"Skill(dev-harness:box-design)"` to `permissions.allow` in `~/.claude/settings.json`. Option 2 already includes it.
+`design-auditor` loads its checklists by invoking the `box-design` and `retry-contracts` skills, which prompts once per skill. Approve the prompts, or add `"Skill(dev-harness:box-design)"` and `"Skill(dev-harness:retry-contracts)"` to `permissions.allow` in `~/.claude/settings.json`. Option 2 already includes it.
 
 ### Disable in a specific repo
 
