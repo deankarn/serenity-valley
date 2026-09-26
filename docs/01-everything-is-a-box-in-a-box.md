@@ -8,13 +8,19 @@ It then shows how boxes at the implementation level map to good development and 
 
 ## Zooming in, box by box
 
+### The example
+
+So, everything's a box in a box! No, really! But before we start zooming in, we need something to zoom in on.
+
+For the rest of this talk we'll use a contrived example, which we'll pretend is new, novel, groundbreaking, and about to change the industry :P — an API that queries a database and returns different responses based on the contents of the rows. Groundbreaking, right? Well, no, but it's easy to follow, and the ideas extend far beyond it.
+
+We'll also assume the business already has systems for user profiles, auth, and contact sourcing and storage.
+
 ### 50,000 ft
 
-So, everything's a box in a box! No, really! Let's start at the top, with the 50,000 ft view. This is the level at which you discuss products with leadership, give elevator pitches, and convince stakeholders that whatever you're building is worth it, without getting dragged down into the details of how.
+Let's start at the top, with the 50,000 ft view. This is the level at which you discuss products with leadership, give elevator pitches, and convince stakeholders that whatever you're building is worth it, without getting dragged down into the details of how.
 
-For the rest of this talk we'll use a contrived example, which we'll pretend is new, novel, groundbreaking, and about to change the industry :P — an API that queries a database and returns different responses based on the contents of the rows. Groundbreaking, right? Well, no, but it's easy to follow, and the ideas extend far beyond it. We'll also assume the business already has systems for user profiles, auth, and contact sourcing and storage.
-
-At the 50,000 ft view, this is just one box. That box describes the system: what is this thing, what does it do, and what problem does it solve? Here, we'll describe it as a prospecting API that lets callers query by multiple criteria to find the stakeholders at one or more companies to reach out to — a game changer for go-to-market flows.
+At the 50,000 ft view, our example is just one box. That box describes the system: what is this thing, what does it do, and what problem does it solve? Here, we'll describe it as a prospecting API that lets callers query by multiple criteria to find the stakeholders at one or more companies to reach out to — a game changer for go-to-market flows.
 
 ```mermaid
 ---
