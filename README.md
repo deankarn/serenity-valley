@@ -12,6 +12,7 @@ General software design and development practices — how to design good softwar
 |---|---|---|
 | `box-design` | skill | Decompose systems into boxes with explicit interface, error, and test contracts. Auto-triggers when designing or planning. `/box-design verify` audits a plan or codebase; `/box-design levels` pitches a design at the right altitude. The bare name works unless another command is also named `box-design`; `/dev-harness:box-design` always works. |
 | `retry-contracts` | skill | Errors carry retry advice (`shouldRetry`, `retryAfter`) through one shared interface; exactly one level retries per flow, and never against an upstream time budget. Auto-triggers on retry, backoff, and transient-error work and alongside `box-design`. `/retry-contracts verify` audits a plan or codebase. |
+| `clean-code` | skill | Everyday conventions: `get*` returns an optional, `find*` a collection; names as short as their visible scope allows; never fighting the project's formatter. Auto-triggers when writing or reviewing code. `/clean-code verify` audits a plan or codebase. |
 | `design-auditor` | agent | Read-only audit of a plan, diff, or repo against both skills' checklists, in an isolated context. Returns findings only. |
 
 ## Install

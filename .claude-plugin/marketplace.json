@@ -9,7 +9,7 @@
     {
       "name": "dev-harness",
       "source": "./plugins/dev-harness",
-      "description": "General software design and development practices: box decomposition, interface contracts, error and retry contracts, and test boundaries.",
+      "description": "General software design and development practices: box decomposition, interface contracts, error and retry contracts, test boundaries, and clean-code conventions.",
       "category": "development"
     }
   ]

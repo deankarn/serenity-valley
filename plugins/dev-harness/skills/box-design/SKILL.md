@@ -47,7 +47,7 @@ The failure path is an arrow like any other, and it is the one most often left u
 
 Each box publishes one error type. It carries a message and, where callers genuinely need to act differently, a **reason** from a small enum the box owns. One type per box, not one per operation: per-operation types force a branch at every call site and make generic retry handling impossible.
 
-**Absence is not an error.** Not finding something is part of the method's contract: return an empty collection when looking for one or more, and an optional when looking for zero or one.
+**Absence is not an error.** Not finding something is part of the method's contract: return an empty collection when looking for one or more, and an optional when looking for zero or one. Name them `find*` and `get*` respectively, per `dev-harness:clean-code`.
 
 Classify at the boundary. Vendor codes, driver errors, and transport status codes are translated into the box's own error — its reason and its retry answer — inside the box that owns the technology. Put that classification in a reusable helper, not in the error type's ancestry — sharing by inheritance puts the driver's type into your contract and breaks backend swaps.
 
