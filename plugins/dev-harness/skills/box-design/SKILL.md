@@ -45,7 +45,7 @@ Each arrow between boxes is a contract.
 
 The failure path is an arrow like any other, and it is the one most often left uncontracted.
 
-Each box publishes one error type. It carries a message and, where callers genuinely need to act differently, a **reason** from a small enum the box owns. One type per box, not one per operation: per-operation types force a branch at every call site and make generic retry handling impossible.
+Each box publishes one error type. It carries a message and, where callers genuinely need to act differently, a **reason** from a small enum the box owns. One type per box, not one per operation: per-operation types are too granular and force a branch at every call site. The box is the right grain.
 
 **Absence is not an error.** Not finding something is part of the method's contract: return an empty collection when looking for one or more, and an optional when looking for zero or one. Name them `find*` and `get*` respectively, per `dev-harness:clean-code`.
 
@@ -53,8 +53,8 @@ Classify at the boundary. Vendor codes, driver errors, and transport status code
 
 Wrap deliberately. Three categories, three answers:
 
-- **Operational failures** — unreachable store, write conflict, timeout, malformed query. Wrap and classify. These are why the contract exists.
-- **Programming defects** — bad argument, broken invariant, null dereference. Propagate raw. Wrapping a bug as an operational failure invites retrying a deterministic crash and buries the origin.
+- **Operational failures** — unreachable store, write conflict, timeout, malformed query. Wrap and classify. These are why the contract exists. A deterministic failure such as a malformed query is still wrapped; it answers `shouldRetry` with `false`.
+- **Programming defects** — broken invariant, null dereference: the application cannot safely continue. Propagate raw and let it crash, for good reasons. Reserve this for genuinely critical failures; anything short of that is wrapped. Wrapping a crash-worthy defect as an operational failure invites retrying it and buries the origin.
 - **Cancellation and environment signals** — shutdown, interruption, deadline from above, out of memory. Never wrap. They are not the box's to interpret, and swallowing cancellation breaks the caller's ability to stop work.
 
 Preserve the cause. Keeping the underlying error reachable — cause chain, wrapped error, `source` — is not a leak: the box's error is the contract surface, the cause is diagnostic. Callers may unwrap for logging or a rare backend-specific decision, never in ordinary control flow. Across a process boundary the cause does not survive; the message, reasons, and retry advice do, so they have to stand on their own.

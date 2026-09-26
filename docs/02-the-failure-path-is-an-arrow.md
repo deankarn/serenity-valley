@@ -22,7 +22,7 @@ The fix starts simple: each box publishes one error type of its own. It carries 
 
 And one thing that is *not* an error: not finding something. That's part of the method's contract. Looking for one or more? Return an empty list. Looking for zero or one? Return an optional. Nothing failed, so there's no error to return. (How to name those methods so callers know which one they're getting is coming up in [Clean Code](03-clean-code.md).)
 
-Note: one type per *box*, not one per *operation*. It's tempting to make `SearchContactsError`, `CreateContactError`, `UpdateContactError`... resist! Per-operation types force a branch at every call site and make generic handling — like retries, which we'll get to — impossible.
+Note: one type per *box*, not one per *operation*. It's tempting to make `SearchContactsError`, `CreateContactError`, `UpdateContactError`... resist! Per-operation types are just too granular. They force a branch at every call site for no real gain. The box is the level that makes sense.
 
 ### Classify at the boundary
 
@@ -34,8 +34,8 @@ Put that classification in a reusable helper, not in the error type's ancestry. 
 
 Not every error should be wrapped, though. There are three categories, with three different answers:
 
-1. **Operational failures** — unreachable store, write conflict, timeout, malformed query. Wrap and classify. These are why the contract exists.
-2. **Programming defects** — bad argument, broken invariant, null dereference. Let them propagate raw. Wrap a bug as an operational failure and someone will happily retry a deterministic crash, while the real origin gets buried.
+1. **Operational failures** — unreachable store, write conflict, timeout, malformed query. Wrap and classify. These are why the contract exists. Yes, even the malformed query gets wrapped — it just says not to retry, because it'll fail the same way every time.
+2. **Programming defects** — broken invariant, null dereference: the kind of failure where the application can't safely continue. Let them propagate raw and crash, for good reasons. That's reserved for the truly critical stuff; anything short of it gets wrapped. Wrap a crash-worthy bug as an operational failure and someone will happily retry it, while the real origin gets buried.
 3. **Cancellation and environment signals** — shutdown, interruption, a deadline from above, out of memory. Never wrap these. They're not the box's to interpret, and swallowing a cancellation breaks the caller's ability to stop work.
 
 And when you do wrap, preserve the cause. Keeping the underlying error reachable isn't a leak: the box's error is the contract, the cause is for diagnostics. Callers can unwrap it for logging, but never for ordinary control flow.
