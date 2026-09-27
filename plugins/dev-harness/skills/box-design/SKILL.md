@@ -33,7 +33,7 @@ Each arrow between boxes is a contract.
 
 ## Rules
 
-**Every box owns its own payload types.** The API request type is not the business-logic input. The database row type is not the API response. On day one they look identical; they always diverge. Sharing them welds the boxes together and kills independent evolution.
+**Every box owns its own payload types.** The API request type is not the business-logic input. The database row type is not the API response. On day one they look identical; they always diverge. Sharing them welds the boxes together and kills independent evolution. Small value types — IDs, units — are shared vocabulary, not payloads, and every box may use them (see `dev-harness:clean-code`).
 
 **Nothing leaks across an arrow.** Driver errors, SQL, ORM entities, and result sets stay inside the storage box. HTTP status codes, headers, request objects, and framework context types stay inside the exposure box. Business logic sees domain types only. A caller that imports a driver or client library just to inspect an error has already leaked — it pulls in a dependency it never calls.
 
