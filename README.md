@@ -12,36 +12,37 @@ General software design and development practices — how to design good softwar
 |---|---|---|
 | `box-design` | skill | Decompose systems into boxes with explicit interface, error, and test contracts. Auto-triggers when designing or planning. `/box-design verify` audits a plan or codebase; `/box-design levels` pitches a design at the right altitude. The bare name works unless another command is also named `box-design`; `/dev-harness:box-design` always works. |
 | `retry-contracts` | skill | Errors carry retry advice (`shouldRetry`, `retryAfter`) through one shared interface; exactly one level retries per flow, and never against an upstream time budget. Auto-triggers on retry, backoff, and transient-error work and alongside `box-design`. `/retry-contracts verify` audits a plan or codebase. |
-| `clean-code` | skill | Everyday conventions: container-relative names (`users.Get`), `get` returns an optional and `find` a collection, arguments ordered by variance and matched across calls, booleans as questions, distinct types for IDs and units, enums over flag arguments, early returns, comments that say why, and never fighting the project's formatter. Auto-triggers when writing or reviewing code. `/clean-code verify` audits a plan or codebase. |
+| `clean-code` | skill | Everyday conventions: container-relative names (`users.Get`), `get` returns an optional and `find` a collection, arguments ordered by variance and matched across calls, booleans as questions, distinct types where mix-ups are costly (optional), enums over flag arguments, early returns, comments that say why, and never fighting the project's formatter. Auto-triggers when writing or reviewing code. `/clean-code verify` audits a plan or codebase. |
 | `design-auditor` | agent | Read-only audit of a plan, diff, or repo against the `box-design` and `retry-contracts` checklists, in an isolated context. Returns findings only. |
 
 ## Install
 
-The marketplace installs straight from this GitHub repo. No clone is needed.
+1. **Install the plugin** from your shell:
 
-### Option 1 — commands (recommended)
+   ```sh
+   claude plugin marketplace add deankarn/claude-harness
+   claude plugin install dev-harness@big-damn-heroes
+   ```
 
-From your shell:
+   Inside Claude Code, the same commands work as `/plugin marketplace add …` and `/plugin install …`.
 
-```sh
-claude plugin marketplace add deankarn/claude-harness   # GitHub owner/repo shorthand
-claude plugin install dev-harness@big-damn-heroes
-```
+2. **Turn on auto-update**, so every push to `main` reaches this machine. In Claude Code: `/plugin` → **Marketplaces** → `big-damn-heroes` → **Enable auto-update**. This can't be set by the install commands.
 
-Or inside a session:
+3. **Optional — skip the `design-auditor` permission prompts** by adding this to `~/.claude/settings.json`:
 
-```
-/plugin marketplace add deankarn/claude-harness
-/plugin install dev-harness@big-damn-heroes
-```
+   ```json
+   { "permissions": { "allow": ["Skill(dev-harness:box-design)", "Skill(dev-harness:retry-contracts)"] } }
+   ```
 
-The full URL works too: `claude plugin marketplace add https://github.com/deankarn/claude-harness.git`.
+4. **Restart Claude Code**, or run `/reload-plugins`.
 
-Then turn on auto-update: `/plugin` → **Marketplaces** → `big-damn-heroes` → **Enable auto-update**. Without it, you only get updates when you pull them yourself (see below). The install commands can't turn auto-update on, and a marketplace can't default it on, so this toggle is a required step.
+Check it worked: `claude plugin list` shows `dev-harness@big-damn-heroes` as enabled.
 
-### Option 2 — settings file
+Had `box-design` installed as a standalone skill before? Delete `~/.claude/skills/box-design`, or it loads twice.
 
-Useful if you sync dotfiles and want new machines set up with no commands. Add this to `~/.claude/settings.json`, merging with any existing keys:
+### Alternative: settings file
+
+For dotfiles, so a new machine needs no commands. Merge this into `~/.claude/settings.json` and start Claude Code. It installs the plugin, with auto-update on:
 
 ```json
 {
@@ -51,41 +52,27 @@ Useful if you sync dotfiles and want new machines set up with no commands. Add t
       "autoUpdate": true
     }
   },
-  "enabledPlugins": {
-    "dev-harness@big-damn-heroes": true
-  },
+  "enabledPlugins": { "dev-harness@big-damn-heroes": true },
   "permissions": {
     "allow": ["Skill(dev-harness:box-design)", "Skill(dev-harness:retry-contracts)"]
   }
 }
 ```
 
-Start Claude Code. It clones the marketplace from GitHub in the background and installs `dev-harness`, then shows `Plugins changed. Run /reload-plugins to activate.` From then on it keeps the plugin updated.
+## Update
 
-### How updates arrive
+With auto-update on, there's nothing to do. Claude Code picks up new commits within a few minutes of starting a session and asks you to run `/reload-plugins`.
 
-The plugin has no `version`, so every commit to `main` counts as a new version. With auto-update on, Claude Code checks for changes within about 10 minutes after the first message of an interactive session. It updates the plugin on disk and prompts `Run /reload-plugins to apply`; the next launch picks it up either way.
-
-To update immediately:
+To update right away:
 
 ```sh
 claude plugin marketplace update big-damn-heroes
 claude plugin update dev-harness@big-damn-heroes
 ```
 
-Setting `DISABLE_AUTOUPDATER`, `DISABLE_UPDATES`, or `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` turns auto-update off, unless `FORCE_AUTOUPDATE_PLUGINS=1` is also set.
+## Disable in one repo
 
-### Migrating from a standalone skill
-
-If you previously installed `box-design` as a standalone skill, remove `~/.claude/skills/box-design`. Otherwise it loads twice and takes the bare `/box-design` name.
-
-### Permissions
-
-`design-auditor` loads its checklists by invoking the `box-design` and `retry-contracts` skills, which prompts once per skill. Approve the prompts, or add `"Skill(dev-harness:box-design)"` and `"Skill(dev-harness:retry-contracts)"` to `permissions.allow` in `~/.claude/settings.json`. Option 2 already includes it.
-
-### Disable in a specific repo
-
-Add to that repo's `.claude/settings.local.json`:
+Add this to that repo's `.claude/settings.local.json`:
 
 ```json
 { "enabledPlugins": { "dev-harness@big-damn-heroes": false } }
