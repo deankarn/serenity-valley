@@ -228,13 +228,13 @@ Here's a bug that compiles just fine. A method takes a user ID and an order ID, 
 
 The fix is to give each concept its own type. A `UserID` is not an `OrderID`, even if both are integers underneath. Now the swap is a compile error, and in Go and Rust it costs nothing at runtime: the wrapper compiles away.
 
-I'll be honest, though: this one isn't free, especially in Java. Every new type is more code, and in some languages more glue for every framework that touches it. So spend it where the mix-ups actually happen:
+I'll be honest, though: this one isn't free. Every new type is more code, some languages need glue for every framework that touches it, and every shared type raises coordination questions — where does it live, who owns it, who has to agree on it. That overhead slows development down. So only reach for it when it buys a real, tangible benefit, which usually means somewhere a mix-up would hurt:
 
-- **Values of the same primitive type that meet** — two or more different concepts in one signature, like a user ID and an order ID. That's where swaps happen.
+- **Sensitive operations, where a swap does real damage** — moving money, cancelling or deleting things, granting permissions, anything that crosses customers or tenants. Especially when two IDs of the same primitive type meet in one signature, like the user ID and order ID above.
 - **Values with rules** — money, or an `Email` that validates itself once, in its constructor, so nothing downstream ever has to check again.
 - **Units** — more on those in the next section.
 
-In Go and Rust it's so cheap that it's worth defaulting to. Elsewhere, weigh it: a `UserID` that only ever travels on its own doesn't need a type of its own. And never retrofit a whole codebase just for this.
+Everywhere else, a plain `int64` is fine. A `UserID` that only ever travels on its own, into a read that can't hurt anyone, doesn't need a type of its own. The code is cheaper in Go and Rust than in Java, but the coordination costs the same everywhere, so the bar is the same everywhere. And never retrofit a whole codebase just for this.
 
 ```go
 type UserID int64
@@ -488,7 +488,7 @@ The best way to never think about formatting is to never do it by hand. Format o
 Good conventions are the ones you stop noticing.
 
 - **Names** tell you what comes back before you read a line of the implementation, don't repeat what their container already says, and are as short as their scope allows, and no shorter.
-- **Types** make the wrong call fail to compile where mix-ups actually happen: a `UserID` is never an `OrderID`, and a timeout is never just an `int`.
+- **Types** make the wrong call fail to compile where a mix-up would really hurt: a `UserID` is never an `OrderID`, and a timeout is never just an `int`.
 - **Functions** put the boring arguments first, say what they mean instead of passing `true`, and get the edge cases out of the way early.
 - **Comments** explain why.
 - **Formatting and linting** are decided once, by the defaults, and never again.

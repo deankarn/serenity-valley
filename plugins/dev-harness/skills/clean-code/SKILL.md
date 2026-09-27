@@ -1,6 +1,6 @@
 ---
 name: clean-code
-description: Everyday code conventions — container-relative names (users.Get, not userStore.GetUser), get returns an optional and find a collection, arguments ordered by variance and named to match across calls, booleans as questions, distinct types for IDs and units, enums instead of flag arguments, early returns, comments that say why, and never fighting the project's formatter. Use when writing, reviewing, or refactoring code, and when naming or designing functions, methods, parameters, or variables. Invoke directly as /clean-code verify to audit a plan or codebase against these conventions.
+description: Everyday code conventions — container-relative names (users.Get, not userStore.GetUser), get returns an optional and find a collection, arguments ordered by variance and named to match across calls, booleans as questions, distinct types where mix-ups are costly, enums instead of flag arguments, early returns, comments that say why, and never fighting the project's formatter. Use when writing, reviewing, or refactoring code, and when naming or designing functions, methods, parameters, or variables. Invoke directly as /clean-code verify to audit a plan or codebase against these conventions.
 when_to_use: Trigger when writing or editing code in any language, naming or designing a function, method, parameter, variable, or type, writing a data lookup or repository method, adding an ID, boolean, or duration parameter, writing comments, or reviewing a diff. Trigger on phrasings like "what should I name", "clean up this code", "is this naming right", "refactor this function". Do not trigger for prose, configuration, or dependency bumps.
 argument-hint: "[verify]"
 arguments: [mode]
@@ -55,13 +55,15 @@ Applies to lookups from a store, service, or collection. Plain field accessors a
 
 ## Types
 
-**Give concepts their own types, where it pays.** It is not free, so apply it where mix-ups happen:
+**Give concepts their own types — only where it pays.** New types cost code, framework glue, and coordination (where the type lives, who owns it, who must agree), which slows development. Use them only for a tangible benefit:
 
-- values of the same primitive type representing different concepts in one signature (`userID, orderID int64`);
+- sensitive operations where a swap does real damage — moving money, cancelling or deleting, granting permissions, crossing customers or tenants — especially where same-primitive IDs meet in one signature (`userID, orderID int64`);
 - values with rules worth enforcing once (money, an `Email` validated in its constructor);
-- units (below).
+- units (below) — standard types, so no coordination cost.
 
-Default to it in Go and Rust, where it is nearly free. Elsewhere — especially Java, where every framework needs glue per type — apply it only where a mix-up is plausible or costly. Never retrofit a codebase just for this.
+Elsewhere, primitives are fine. The bar is the same in every language: the code is cheaper in Go and Rust, but the coordination costs the same. Never retrofit a codebase just for this.
+
+This is an optional recommendation, not a rule. When those conditions hold, suggest the type to the user and let them decide; do not introduce new value types unprompted. The rules below apply once a type exists.
 
 - Go: a defined type, `type UserID int64`. Never an alias (`type UserID = int64`), which protects nothing. `database/sql` accepts and scans defined types directly.
 - Rust: a newtype, `struct UserId(i64)`, with `From<i64>` in and `Deref<Target = i64>` out. serde's and sqlx's `transparent` attributes take the newtype directly.
