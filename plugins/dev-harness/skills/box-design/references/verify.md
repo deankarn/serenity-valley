@@ -55,8 +55,8 @@ Use Grep and Glob. Adapt the patterns to the language in the repo — these are 
 - One error type per operation rather than one per box. Callers end up with a catch block per call site.
 - No catch-all on the box's public entry points, so unchecked or unexpected failures escape unclassified.
 - Cancellation, interruption, shutdown, or out-of-memory caught and wrapped as an operational failure.
-- Programming defects — broken invariant, null dereference — wrapped and classified as retryable.
-- Non-critical failures, such as a malformed query, propagated raw instead of wrapped. Propagating raw is reserved for failures that should stop the application.
+- Programming defects — malformed query, broken invariant, null dereference — wrapped, returned as errors, or classified as retryable instead of stopping the application where they are detected.
+- Operational failures panicking or crashing the application. Stopping is reserved for defects where the application cannot function.
 - Cause chain dropped on wrap, or unwrapped in ordinary control flow rather than for logging.
 - Retry behaviour: unless it has already run, invoke the `dev-harness:retry-contracts` skill with `verify` and run its code audit. Report its findings in a separate section.
 

@@ -36,8 +36,8 @@ Define it once, centrally, as reusable code for the whole codebase or organizati
 ## Answering shouldRetry
 
 - **Unknown is `false`.** A caught but unrecognized failure is not retried.
-- **Programming defects and cancellation are never retried.** Crash-worthy defects propagate raw and cancellation is never wrapped (see box-design's error contracts), so neither carries retry advice.
-- **Deterministic failures answer `false`.** A malformed query or a rejected input is wrapped, but retrying it fails the same way every time.
+- **Programming defects and cancellation are never retried.** A defect stops the application where it is detected, and cancellation is never wrapped (see box-design's error contracts), so neither carries retry advice.
+- **Deterministic failures answer `false`.** A rejected input or a duplicate write is wrapped, but retrying it fails the same way every time.
 - **Idempotency is part of the answer.** A transient failure on a non-idempotent operation — a write that may have committed before the timeout — answers `false`, unless the operation carries an idempotency key that makes the retry safe. The box knows which of its operations are idempotent; that is why the box answers.
 - **Wrapping re-answers.** A box that wraps another box's error implements the interface on its own error. It usually passes the inner answer through and may override it with knowledge the inner box lacks. Generic retry logic reads the outermost answer.
 

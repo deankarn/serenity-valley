@@ -34,8 +34,8 @@ Put that classification in a reusable helper, not in the error type's ancestry. 
 
 Not every error should be wrapped, though. There are three categories, with three different answers:
 
-1. **Operational failures** — unreachable store, write conflict, timeout, malformed query. Wrap and classify. These are why the contract exists. Yes, even the malformed query gets wrapped — it just says not to retry, because it'll fail the same way every time.
-2. **Programming defects** — broken invariant, null dereference: the kind of failure where the application can't safely continue. Let them propagate raw and crash, for good reasons. That's reserved for the truly critical stuff; anything short of it gets wrapped. Wrap a crash-worthy bug as an operational failure and someone will happily retry it, while the real origin gets buried.
+1. **Operational failures** — unreachable store, write conflict, timeout. Wrap and classify. These are why the contract exists.
+2. **Programming defects** — a malformed query, a broken invariant, a null dereference. Something is really wrong, and the application can't function. Don't wrap it, and don't bubble it up as an error either: panic and stop the application right there. Crash, for good reasons! That's reserved for the truly critical stuff; anything short of it is an operational failure and gets wrapped. Hide a defect — wrap it, return it, classify it — and someone will happily retry it, while the real origin gets buried.
 3. **Cancellation and environment signals** — shutdown, interruption, a deadline from above, out of memory. Never wrap these. They're not the box's to interpret, and swallowing a cancellation breaks the caller's ability to stop work.
 
 And when you do wrap, preserve the cause. Keeping the underlying error reachable isn't a leak: the box's error is the contract, the cause is for diagnostics. Callers can unwrap it for logging, but never for ordinary control flow.
@@ -92,7 +92,7 @@ That shared library holds the contract and nothing else — no drivers, no frame
 A few rules for answering `shouldRetry` honestly:
 
 - **Unknown means no.** An error the box caught but doesn't recognize answers `false`. Retrying into an unknown failure is the unsafe direction.
-- **Defects and cancellations are never retried.** Retrying a bug just crashes again, and retrying after a cancellation ignores the caller telling you to stop.
+- **Defects and cancellations are never retried.** A defect stops the application right where it's found, so there's nothing to retry, and retrying after a cancellation ignores the caller telling you to stop.
 - **Idempotency is part of the answer.** This is the big one. Say a write times out. Did it fail, or did the database commit it just before the timeout? You don't know! Retry a non-idempotent operation there and you've created a duplicate. The box knows whether its operation is idempotent — or whether it takes an idempotency key that makes it safe — so that goes into the answer. A transient failure on an unsafe operation answers `false`.
 - **Wrapping re-answers.** When the business logic wraps a storage error, its own error implements the interface too. Usually it passes the storage box's answer through, but it can override it — the business logic might know that this particular flow isn't safe to repeat, even though storage says the failure was transient. The generic helper asks the outermost error. For example, in Go, `errors.As` finds the outermost one first.
 

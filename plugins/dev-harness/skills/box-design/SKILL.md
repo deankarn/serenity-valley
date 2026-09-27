@@ -53,8 +53,8 @@ Classify at the boundary. Vendor codes, driver errors, and transport status code
 
 Wrap deliberately. Three categories, three answers:
 
-- **Operational failures** — unreachable store, write conflict, timeout, malformed query. Wrap and classify. These are why the contract exists. A deterministic failure such as a malformed query is still wrapped; it answers `shouldRetry` with `false`.
-- **Programming defects** — broken invariant, null dereference: the application cannot safely continue. Propagate raw and let it crash, for good reasons. Reserve this for genuinely critical failures; anything short of that is wrapped. Wrapping a crash-worthy defect as an operational failure invites retrying it and buries the origin.
+- **Operational failures** — unreachable store, write conflict, timeout. Wrap and classify. These are why the contract exists.
+- **Programming defects** — malformed query, broken invariant, null dereference: something is really wrong and the application cannot function. Do not wrap it and do not return it up the chain as an error — panic, or the language's equivalent, and stop the application right where it is detected. Crash for good reasons. Reserve this for genuinely critical failures; anything short of that is an operational failure and is wrapped. Hiding a defect — wrapping it, returning it, or classifying it — invites retrying it and buries the origin.
 - **Cancellation and environment signals** — shutdown, interruption, deadline from above, out of memory. Never wrap. They are not the box's to interpret, and swallowing cancellation breaks the caller's ability to stop work.
 
 Preserve the cause. Keeping the underlying error reachable — cause chain, wrapped error, `source` — is not a leak: the box's error is the contract surface, the cause is diagnostic. Callers may unwrap for logging or a rare backend-specific decision, never in ordinary control flow. Across a process boundary the cause does not survive; the message, reasons, and retry advice do, so they have to stand on their own.
