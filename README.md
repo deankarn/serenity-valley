@@ -15,6 +15,7 @@ General software design and development practices — how to design good softwar
 | `clean-code` | skill | Everyday conventions: container-relative names (`users.Get`), `get` returns an optional and `find` a collection, arguments ordered by variance and matched across calls, booleans as questions, distinct types where mix-ups are costly (optional), enums over flag arguments, early returns, comments that say why, and never fighting the project's formatter. Auto-triggers when writing or reviewing code. `/clean-code verify` audits a plan or codebase. |
 | `design-auditor` | agent | Read-only audit of a plan, diff, or repo against the `box-design` and `retry-contracts` checklists, in an isolated context. Returns findings only. Runs once on a final plan that changes a boundary. |
 | `SessionStart` | hook | Adds a three-line routing reminder at session start: planning → `box-design`, audit or verify → `design-auditor`. |
+
 ## Install
 
 1. **Install the plugin** from your shell:
