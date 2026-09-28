@@ -1,6 +1,6 @@
-# claude-harness
+# serenity-valley
 
-The **serenity-valley** Claude Code plugin marketplace.
+A Claude Code plugin marketplace.
 
 ## Plugins
 
@@ -21,7 +21,7 @@ General software design and development practices — how to design good softwar
 1. **Install the plugin** from your shell:
 
    ```sh
-   claude plugin marketplace add deankarn/claude-harness
+   claude plugin marketplace add deankarn/serenity-valley
    claude plugin install browncoat@serenity-valley
    ```
 
@@ -49,7 +49,7 @@ For dotfiles, so a new machine needs no commands. Merge this into `~/.claude/set
 {
   "extraKnownMarketplaces": {
     "serenity-valley": {
-      "source": { "source": "github", "repo": "deankarn/claude-harness" },
+      "source": { "source": "github", "repo": "deankarn/serenity-valley" },
       "autoUpdate": true
     }
   },

@@ -5,8 +5,8 @@
     "name": "Dean Karn",
     "email": "claude@deankarn.com"
   },
-  "homepage": "https://github.com/deankarn/claude-harness",
-  "repository": "https://github.com/deankarn/claude-harness",
+  "homepage": "https://github.com/deankarn/serenity-valley",
+  "repository": "https://github.com/deankarn/serenity-valley",
   "license": "MIT OR Apache-2.0",
   "keywords": ["design", "architecture", "planning", "interface-contracts", "testing", "retries", "error-handling", "clean-code", "naming", "code-review"]
 }

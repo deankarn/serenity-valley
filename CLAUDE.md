@@ -1,6 +1,6 @@
-# claude-harness
+# serenity-valley
 
-Claude Code marketplace `serenity-valley`. Each plugin lives in `plugins/<name>/` and is listed in `.claude-plugin/marketplace.json`.
+Claude Code plugin marketplace. Each plugin lives in `plugins/<name>/` and is listed in `.claude-plugin/marketplace.json`.
 
 ## Conventions
 
