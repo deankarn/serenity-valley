@@ -17,10 +17,42 @@ Claude Code plugin marketplace. Each plugin lives in `plugins/<name>/` and is li
 - `docs/` holds the talks behind the skills — source material and design intent, not shipped with any plugin. Files are `NN-slug.md`, numbered by reading order; renumber with `git mv` to insert, and keep `docs/README.md` in sync.
 - When a skill changes, check it still honours its talk, and update the talk if the thinking moved.
 
+## Routing and handoffs
+
+How browncoat's hook, skills, and agent hand off to each other. Keep these invariants when editing any of them.
+
+```mermaid
+flowchart LR
+  H[SessionStart hook] -->|planning| BD[box-design]
+  H -->|structural or conventions audit| DA[design-auditor]
+  BD -->|final plan changes a boundary| DA
+  BD -->|verify, code| DA
+  RC[retry-contracts] -->|verify, code, retries only| DA
+  CC[clean-code] -->|verify, code, conventions only| DA
+  DA -->|Skill verify| BD
+  DA -->|Skill verify| RC
+  DA -->|Skill verify| CC
+```
+
+- The hook routes; it never restates a rule. Each gate lives in one skill, and the hook points to it.
+- Phrase each routing line positively, naming what its target checks (`design-auditor`: structure and conventions). A bare "audit", "verify", or "review" is too broad to route on. Keep the lines short: the target's `description` and `when_to_use` carry the detail.
+- The auditor runs on a plan once, and only when the final plan changes a boundary. It doesn't run for discussion, single-box changes, or after every `box-design` load.
+- `design-auditor` has no `Agent` tool. That keeps the skills it invokes from delegating back to it. Don't add one.
+- A delegation prompt states its scope, because the auditor runs all three checklists unless told otherwise.
+- When you edit the hook, an agent description, a skill's `description` or `when_to_use`, or a delegation sentence, re-run the routing checks and update the README hook row.
+
 ## Checks
 
 ```sh
 claude plugin validate .   # the "No version specified" warning is expected
+
+# Routing: list the agents and skills a prompt invokes, using the local copy only.
+claude -p --plugin-dir ./plugins/browncoat \
+  --settings '{"enabledPlugins":{"browncoat@serenity-valley":false}}' \
+  --max-turns 10 --output-format stream-json --verbose "<prompt>" < /dev/null 2>/dev/null \
+  | jq -c 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and (.name=="Agent" or .name=="Skill")) | {name, agent: .input.subagent_type, skill: .input.skill, args: .input.args}'
 ```
+
+Routing prompts to re-run: "audit the codebase for correctness" (no auditor), "audit the codebase for layering and coupling" (auditor), `/browncoat:retry-contracts verify` (auditor asked for retries only).
 
 Test changes without installing: `claude --plugin-dir ./plugins/browncoat`, then `/reload-plugins` after edits.
