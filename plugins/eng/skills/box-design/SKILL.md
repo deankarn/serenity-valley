@@ -11,7 +11,7 @@ allowed-tools: Read Grep Glob
 
 Mode: `$mode`
 
-- Empty mode — apply the rules below to the current design or planning work. Do not run an audit.
+- Empty mode — apply the rules below to the current design or planning work. Do not run the audit checklist inline; the one audit handoff is in When planning.
 - `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context (a proposed plan, or the repo). Audit only when the user asked for it. For a code audit, prefer delegating to the `eng:design-auditor` agent when the Agent tool is available, so the sweep stays out of the main context.
 - `levels` — read `${CLAUDE_SKILL_DIR}/references/levels.md` for pitching or documenting a design at a given altitude, and `${CLAUDE_SKILL_DIR}/references/example.md` for one system drawn at every altitude.
 
@@ -98,6 +98,8 @@ Then state **build order**. Leaf boxes (storage, external clients) are built fir
 Each box is a unit of work. Derive milestones from the blocked-by edges — a milestone is the point where blocked work becomes unblocked — rather than from calendar slices. The breakdown takes minutes; skipping it costs far more in rework.
 
 Where the work crosses a team or repo boundary, name the boundary and the contract that unblocks the other side.
+
+When the plan introduces or changes a boundary — a new box, remote dependency, storage, or failure path — hand the final draft to the `eng:design-auditor` agent once, before presenting it, when the Agent tool is available. Fold its findings into the plan. Skip this for discussion and for changes contained in one box.
 
 For the expected shape of a breakdown, see `${CLAUDE_SKILL_DIR}/references/example.md`.
 

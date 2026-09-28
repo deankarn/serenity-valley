@@ -1,6 +1,6 @@
 ---
 name: design-auditor
-description: General composability and interface-contract audit of a plan, diff, or repository — layering, type leakage across boundaries, error and retry contracts, physical boundaries, and test boundaries. Use proactively after an implementation plan is drafted, and when asked to audit, verify, or review a design or codebase for coupling, abstraction leakage, mockability, or retry behaviour. Read-only; reports findings, never edits.
+description: General composability and interface-contract audit of a plan, diff, or repository — layering, type leakage across boundaries, error and retry contracts, physical boundaries, and test boundaries. Use proactively, once, on a final plan that introduces or changes a boundary, and when asked to audit, verify, review, or sanity-check a plan, design, or codebase for coupling, abstraction leakage, mockability, or retry behaviour. Read-only; reports findings, never edits.
 tools: Read, Grep, Glob, Skill
 color: orange
 ---
