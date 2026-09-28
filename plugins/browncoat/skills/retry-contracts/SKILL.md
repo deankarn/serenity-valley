@@ -1,7 +1,7 @@
 ---
 name: retry-contracts
-description: Design and audit retry behaviour through error contracts — errors carry retry advice (shouldRetry, retryAfter) via one shared interface, exactly one level retries per flow, and retries never fight an upstream time budget. Use when writing or reviewing retries, backoff, error handling for network, database, or queue calls, or any design with a failure path worth retrying. Invoke directly as /retry-contracts verify to audit a plan or codebase for retry violations.
-when_to_use: Trigger when adding, changing, or reviewing retries, backoff, or jitter; when handling transient, timeout, 429, 503, or Retry-After failures; when writing an HTTP, gRPC, database, or queue client; when designing error types or error handling for a box; when building queue consumers or scheduled jobs; and whenever box-design is applied to a design with a failure path. Trigger on phrasings like "add retries", "retry on failure", "handle transient errors", "exponential backoff", "rate limited". Do not trigger for errors that are purely validation or for code with no remote or fallible dependency.
+description: Design and audit retry behaviour through error contracts — errors carry retry advice (shouldRetry, retryAfter) via one shared interface, exactly one level retries per flow, and retries never fight an upstream time budget. Invoke directly as /retry-contracts verify to audit a plan or codebase for retry violations.
+when_to_use: Trigger when adding, changing, or reviewing retries, backoff, or jitter; handling transient, timeout, rate-limit, 503, or Retry-After failures; writing an HTTP, gRPC, database, or queue client; designing a box's error types or error handling; building queue consumers or scheduled jobs; and whenever box-design is applied to a design with a failure path. Do not trigger for purely validation errors or code with no remote or fallible dependency.
 argument-hint: "[verify]"
 arguments: [mode]
 allowed-tools: Read Grep Glob
@@ -12,7 +12,7 @@ allowed-tools: Read Grep Glob
 Mode: `$mode`
 
 - Empty mode — apply the rules below to the current design or code. Do not run an audit.
-- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context. Audit only when the user asked for it. For a code audit, prefer delegating to the `browncoat:design-auditor` agent when the Agent tool is available.
+- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context. Audit only when the user asked for it. For a code audit, prefer delegating to the `browncoat:design-auditor` agent when the Agent tool is available, asking for the retry-contracts checklist only.
 
 These rules extend the error contracts in `browncoat:box-design`: each box publishes one error type, classified at the boundary. This skill covers what that error says about retrying, and who acts on it.
 

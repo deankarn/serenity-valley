@@ -1,7 +1,7 @@
 ---
 name: clean-code
-description: Everyday code conventions — container-relative names (users.Get, not userStore.GetUser), get returns an optional and find a collection, arguments ordered by variance and named to match across calls, booleans as questions, distinct types where mix-ups are costly, enums instead of flag arguments, early returns, comments that say why, and never fighting the project's formatter. Use when writing, reviewing, or refactoring code, and when naming or designing functions, methods, parameters, or variables. Invoke directly as /clean-code verify to audit a plan or codebase against these conventions.
-when_to_use: Trigger when writing or editing code in any language, naming or designing a function, method, parameter, variable, or type, writing a data lookup or repository method, adding an ID, boolean, or duration parameter, writing comments, or reviewing a diff. Trigger on phrasings like "what should I name", "clean up this code", "is this naming right", "refactor this function". Do not trigger for prose, configuration, or dependency bumps.
+description: Everyday code conventions for naming, lookups, parameters, types, control flow, and comments. Invoke directly as /clean-code verify to audit a plan or codebase against these conventions.
+when_to_use: Trigger when writing, editing, reviewing, or refactoring code in any language, naming or designing a function, method, parameter, variable, or type, writing a data lookup or repository method, adding an ID, boolean, or duration parameter, or writing comments. Trigger on phrasings like "what should I name", "clean up this code", "is this naming right". Do not trigger for prose, configuration, or dependency bumps.
 argument-hint: "[verify]"
 arguments: [mode]
 allowed-tools: Read Grep Glob
@@ -12,7 +12,7 @@ allowed-tools: Read Grep Glob
 Mode: `$mode`
 
 - Empty mode — apply the conventions below to the code being written or changed. Do not run an audit.
-- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context. Audit only when the user asked for it.
+- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context. Audit only when the user asked for it. For a code audit, prefer delegating to the `browncoat:design-auditor` agent when the Agent tool is available, asking for the clean-code checklist only.
 
 ## Precedence
 
