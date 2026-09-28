@@ -12,9 +12,9 @@ allowed-tools: Read Grep Glob
 Mode: `$mode`
 
 - Empty mode — apply the rules below to the current design or code. Do not run an audit.
-- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context. Audit only when the user asked for it. For a code audit, prefer delegating to the `dev-harness:design-auditor` agent when the Agent tool is available.
+- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context. Audit only when the user asked for it. For a code audit, prefer delegating to the `browncoat:design-auditor` agent when the Agent tool is available.
 
-These rules extend the error contracts in `dev-harness:box-design`: each box publishes one error type, classified at the boundary. This skill covers what that error says about retrying, and who acts on it.
+These rules extend the error contracts in `browncoat:box-design`: each box publishes one error type, classified at the boundary. This skill covers what that error says about retrying, and who acts on it.
 
 ## Precedence
 

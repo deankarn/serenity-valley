@@ -1,5 +1,5 @@
 {
-  "name": "big-damn-heroes",
+  "name": "serenity-valley",
   "description": "Dean Karn's Claude Code plugins.",
   "owner": {
     "name": "Dean Karn",
@@ -7,8 +7,8 @@
   },
   "plugins": [
     {
-      "name": "dev-harness",
-      "source": "./plugins/dev-harness",
+      "name": "browncoat",
+      "source": "./plugins/browncoat",
       "description": "General software design and development practices: box decomposition, interface contracts, error and retry contracts, test boundaries, and clean-code conventions.",
       "category": "development"
     }
