@@ -4,13 +4,13 @@ The **big-damn-heroes** Claude Code plugin marketplace.
 
 ## Plugins
 
-### dev-harness
+### eng
 
 General software design and development practices — how to design good software anywhere. Built to sit alongside org-specific plugins: where project or org guidance prescribes specifics, it wins.
 
 | Component | Type | Use |
 |---|---|---|
-| `box-design` | skill | Decompose systems into boxes with explicit interface, error, and test contracts. Auto-triggers when designing or planning. `/box-design verify` audits a plan or codebase; `/box-design levels` pitches a design at the right altitude. The bare name works unless another command is also named `box-design`; `/dev-harness:box-design` always works. |
+| `box-design` | skill | Decompose systems into boxes with explicit interface, error, and test contracts. Auto-triggers when designing or planning. `/box-design verify` audits a plan or codebase; `/box-design levels` pitches a design at the right altitude. The bare name works unless another command is also named `box-design`; `/eng:box-design` always works. |
 | `retry-contracts` | skill | Errors carry retry advice (`shouldRetry`, `retryAfter`) through one shared interface; exactly one level retries per flow, and never against an upstream time budget. Auto-triggers on retry, backoff, and transient-error work and alongside `box-design`. `/retry-contracts verify` audits a plan or codebase. |
 | `clean-code` | skill | Everyday conventions: container-relative names (`users.Get`), `get` returns an optional and `find` a collection, arguments ordered by variance and matched across calls, booleans as questions, distinct types where mix-ups are costly (optional), enums over flag arguments, early returns, comments that say why, and never fighting the project's formatter. Auto-triggers when writing or reviewing code. `/clean-code verify` audits a plan or codebase. |
 | `design-auditor` | agent | Read-only audit of a plan, diff, or repo against the `box-design` and `retry-contracts` checklists, in an isolated context. Returns findings only. |
@@ -21,7 +21,7 @@ General software design and development practices — how to design good softwar
 
    ```sh
    claude plugin marketplace add deankarn/claude-harness
-   claude plugin install dev-harness@big-damn-heroes
+   claude plugin install eng@big-damn-heroes
    ```
 
    Inside Claude Code, the same commands work as `/plugin marketplace add …` and `/plugin install …`.
@@ -31,12 +31,12 @@ General software design and development practices — how to design good softwar
 3. **Optional — skip the `design-auditor` permission prompts** by adding this to `~/.claude/settings.json`:
 
    ```json
-   { "permissions": { "allow": ["Skill(dev-harness:box-design)", "Skill(dev-harness:retry-contracts)"] } }
+   { "permissions": { "allow": ["Skill(eng:box-design)", "Skill(eng:retry-contracts)"] } }
    ```
 
 4. **Restart Claude Code**, or run `/reload-plugins`.
 
-Check it worked: `claude plugin list` shows `dev-harness@big-damn-heroes` as enabled.
+Check it worked: `claude plugin list` shows `eng@big-damn-heroes` as enabled.
 
 Had `box-design` installed as a standalone skill before? Delete `~/.claude/skills/box-design`, or it loads twice.
 
@@ -52,9 +52,9 @@ For dotfiles, so a new machine needs no commands. Merge this into `~/.claude/set
       "autoUpdate": true
     }
   },
-  "enabledPlugins": { "dev-harness@big-damn-heroes": true },
+  "enabledPlugins": { "eng@big-damn-heroes": true },
   "permissions": {
-    "allow": ["Skill(dev-harness:box-design)", "Skill(dev-harness:retry-contracts)"]
+    "allow": ["Skill(eng:box-design)", "Skill(eng:retry-contracts)"]
   }
 }
 ```
@@ -67,7 +67,7 @@ To update right away:
 
 ```sh
 claude plugin marketplace update big-damn-heroes
-claude plugin update dev-harness@big-damn-heroes
+claude plugin update eng@big-damn-heroes
 ```
 
 ## Disable in one repo
@@ -75,13 +75,13 @@ claude plugin update dev-harness@big-damn-heroes
 Add this to that repo's `.claude/settings.local.json`:
 
 ```json
-{ "enabledPlugins": { "dev-harness@big-damn-heroes": false } }
+{ "enabledPlugins": { "eng@big-damn-heroes": false } }
 ```
 
 ## Develop
 
 ```sh
-claude --plugin-dir ./plugins/dev-harness   # shadows the installed copy for this session
+claude --plugin-dir ./plugins/eng   # shadows the installed copy for this session
 claude plugin validate .
 ```
 

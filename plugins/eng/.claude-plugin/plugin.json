@@ -1,5 +1,5 @@
 {
-  "name": "dev-harness",
+  "name": "eng",
   "description": "General software design and development practices: box decomposition, interface contracts, error and retry contracts, test boundaries, and clean-code conventions.",
   "author": {
     "name": "Dean Karn",
