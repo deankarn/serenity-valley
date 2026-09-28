@@ -1,16 +1,16 @@
 # claude-harness
 
-The **big-damn-heroes** Claude Code plugin marketplace.
+The **serenity-valley** Claude Code plugin marketplace.
 
 ## Plugins
 
-### eng
+### browncoat
 
 General software design and development practices — how to design good software anywhere. Built to sit alongside org-specific plugins: where project or org guidance prescribes specifics, it wins.
 
 | Component | Type | Use |
 |---|---|---|
-| `box-design` | skill | Decompose systems into boxes with explicit interface, error, and test contracts. Auto-triggers when designing or planning. `/box-design verify` audits a plan or codebase; `/box-design levels` pitches a design at the right altitude. The bare name works unless another command is also named `box-design`; `/eng:box-design` always works. |
+| `box-design` | skill | Decompose systems into boxes with explicit interface, error, and test contracts. Auto-triggers when designing or planning. `/box-design verify` audits a plan or codebase; `/box-design levels` pitches a design at the right altitude. The bare name works unless another command is also named `box-design`; `/browncoat:box-design` always works. |
 | `retry-contracts` | skill | Errors carry retry advice (`shouldRetry`, `retryAfter`) through one shared interface; exactly one level retries per flow, and never against an upstream time budget. Auto-triggers on retry, backoff, and transient-error work and alongside `box-design`. `/retry-contracts verify` audits a plan or codebase. |
 | `clean-code` | skill | Everyday conventions: container-relative names (`users.Get`), `get` returns an optional and `find` a collection, arguments ordered by variance and matched across calls, booleans as questions, distinct types where mix-ups are costly (optional), enums over flag arguments, early returns, comments that say why, and never fighting the project's formatter. Auto-triggers when writing or reviewing code. `/clean-code verify` audits a plan or codebase. |
 | `design-auditor` | agent | Read-only audit of a plan, diff, or repo against the `box-design` and `retry-contracts` checklists, in an isolated context. Returns findings only. Runs once on a final plan that changes a boundary. |
@@ -22,22 +22,22 @@ General software design and development practices — how to design good softwar
 
    ```sh
    claude plugin marketplace add deankarn/claude-harness
-   claude plugin install eng@big-damn-heroes
+   claude plugin install browncoat@serenity-valley
    ```
 
    Inside Claude Code, the same commands work as `/plugin marketplace add …` and `/plugin install …`.
 
-2. **Turn on auto-update**, so every push to `main` reaches this machine. In Claude Code: `/plugin` → **Marketplaces** → `big-damn-heroes` → **Enable auto-update**. This can't be set by the install commands.
+2. **Turn on auto-update**, so every push to `main` reaches this machine. In Claude Code: `/plugin` → **Marketplaces** → `serenity-valley` → **Enable auto-update**. This can't be set by the install commands.
 
 3. **Optional — skip the `design-auditor` permission prompts** by adding this to `~/.claude/settings.json`:
 
    ```json
-   { "permissions": { "allow": ["Skill(eng:box-design)", "Skill(eng:retry-contracts)"] } }
+   { "permissions": { "allow": ["Skill(browncoat:box-design)", "Skill(browncoat:retry-contracts)"] } }
    ```
 
 4. **Restart Claude Code**, or run `/reload-plugins`.
 
-Check it worked: `claude plugin list` shows `eng@big-damn-heroes` as enabled.
+Check it worked: `claude plugin list` shows `browncoat@serenity-valley` as enabled.
 
 Had `box-design` installed as a standalone skill before? Delete `~/.claude/skills/box-design`, or it loads twice.
 
@@ -48,14 +48,14 @@ For dotfiles, so a new machine needs no commands. Merge this into `~/.claude/set
 ```json
 {
   "extraKnownMarketplaces": {
-    "big-damn-heroes": {
+    "serenity-valley": {
       "source": { "source": "github", "repo": "deankarn/claude-harness" },
       "autoUpdate": true
     }
   },
-  "enabledPlugins": { "eng@big-damn-heroes": true },
+  "enabledPlugins": { "browncoat@serenity-valley": true },
   "permissions": {
-    "allow": ["Skill(eng:box-design)", "Skill(eng:retry-contracts)"]
+    "allow": ["Skill(browncoat:box-design)", "Skill(browncoat:retry-contracts)"]
   }
 }
 ```
@@ -67,8 +67,8 @@ With auto-update on, there's nothing to do. Claude Code picks up new commits wit
 To update right away:
 
 ```sh
-claude plugin marketplace update big-damn-heroes
-claude plugin update eng@big-damn-heroes
+claude plugin marketplace update serenity-valley
+claude plugin update browncoat@serenity-valley
 ```
 
 ## Disable in one repo
@@ -76,13 +76,13 @@ claude plugin update eng@big-damn-heroes
 Add this to that repo's `.claude/settings.local.json`:
 
 ```json
-{ "enabledPlugins": { "eng@big-damn-heroes": false } }
+{ "enabledPlugins": { "browncoat@serenity-valley": false } }
 ```
 
 ## Develop
 
 ```sh
-claude --plugin-dir ./plugins/eng   # shadows the installed copy for this session
+claude --plugin-dir ./plugins/browncoat   # shadows the installed copy for this session
 claude plugin validate .
 ```
 

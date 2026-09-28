@@ -1,6 +1,6 @@
 # Talks
 
-The talks behind the `eng` skills, in reading order. Each builds on the ones before it.
+The talks behind the `browncoat` skills, in reading order. Each builds on the ones before it.
 
 | # | Talk | Read it for |
 |---|---|---|

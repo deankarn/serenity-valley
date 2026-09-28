@@ -1,10 +1,10 @@
 # claude-harness
 
-Claude Code marketplace `big-damn-heroes`. Each plugin lives in `plugins/<name>/` and is listed in `.claude-plugin/marketplace.json`.
+Claude Code marketplace `serenity-valley`. Each plugin lives in `plugins/<name>/` and is listed in `.claude-plugin/marketplace.json`.
 
 ## Conventions
 
-- **Skills hold knowledge and rules. Agents hold roles.** An agent that needs rules invokes the skill (`Skill` in its `tools`, `eng:<skill> <mode>` in its body) — never copy rules into an agent body. Every rule lives in exactly one place.
+- **Skills hold knowledge and rules. Agents hold roles.** An agent that needs rules invokes the skill (`Skill` in its `tools`, `browncoat:<skill> <mode>` in its body) — never copy rules into an agent body. Every rule lives in exactly one place.
 - Prefer invoking over `skills:` preloading when the skill reads its own `references/`: the skill's `allowed-tools` grants those reads, which a subagent otherwise lacks (plugin files sit outside the working directory).
 - Skills are general-purpose design and development practice. They must defer to project/org guidance on specifics (see the Precedence section in `box-design`), since they are installed alongside org-specific marketplaces.
 - Diagrams in `docs/` and skill references are Mermaid, not ASCII — explicit nodes and edges read better for people on GitHub/Obsidian and for models. Keep them small.
@@ -23,4 +23,4 @@ Claude Code marketplace `big-damn-heroes`. Each plugin lives in `plugins/<name>/
 claude plugin validate .   # the "No version specified" warning is expected
 ```
 
-Test changes without installing: `claude --plugin-dir ./plugins/eng`, then `/reload-plugins` after edits.
+Test changes without installing: `claude --plugin-dir ./plugins/browncoat`, then `/reload-plugins` after edits.

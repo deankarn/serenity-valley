@@ -26,7 +26,7 @@ These conventions are general. Project and organization guidance wins on specifi
 
 - **`get`** returns zero or one — an optional.
 - **`find`** returns zero or more — a collection, empty when nothing matches.
-- Absence is never an error (see `eng:box-design` error contracts). Errors are for real failures.
+- Absence is never an error (see `browncoat:box-design` error contracts). Errors are for real failures.
 - The doc comment states the return shape: "or None if there isn't one", "empty if there are none".
 - The rest of the name follows the container rule: `Get`, `FindByTeam`.
 
@@ -51,7 +51,7 @@ Applies to lookups from a store, service, or collection. Plain field accessors a
 - Beyond that, name for what is happening: specific but short. `retries`, not `r`, and not `numberOfRetryAttemptsSoFar`.
 - Functions grow; when in doubt, start specific.
 
-**If it can crash, say so.** A function that panics or throws to stop the application names or documents it: Go `Must*`, Rust `expect` with a `# Panics` doc section, Java `require*`. Use them at startup and for defects only (see `eng:box-design` error contracts) — never on a request path.
+**If it can crash, say so.** A function that panics or throws to stop the application names or documents it: Go `Must*`, Rust `expect` with a `# Panics` doc section, Java `require*`. Use them at startup and for defects only (see `browncoat:box-design` error contracts) — never on a request path.
 
 ## Types
 
@@ -75,7 +75,7 @@ Convert at the edges only: raw to typed where values enter (request parsing, row
 Placement — these types are shared vocabulary, not payloads. Who defines the meaning decides where they live:
 
 - One box defines it (`UserID`): with that box's contract, e.g. `user.ID` next to `user.Store`.
-- Nobody owns it and everyone agrees on it (email, money): the shared foundation library, alongside `Retryable` (see `eng:retry-contracts`).
+- Nobody owns it and everyone agrees on it (email, money): the shared foundation library, alongside `Retryable` (see `browncoat:retry-contracts`).
 - A standard or well-known library type exists (`time.Duration`, `java.time`): use it instead of writing one.
 
 The type stays dependency-free — no JSON or ORM annotations. Framework glue (JPA converter, Jackson mixin, custom scanner) lives in the box that uses the framework.

@@ -12,7 +12,7 @@ allowed-tools: Read Grep Glob
 Mode: `$mode`
 
 - Empty mode — apply the rules below to the current design or planning work. Do not run the audit checklist inline; the one audit handoff is in When planning.
-- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context (a proposed plan, or the repo). Audit only when the user asked for it. For a code audit, prefer delegating to the `eng:design-auditor` agent when the Agent tool is available, so the sweep stays out of the main context.
+- `verify` — read `${CLAUDE_SKILL_DIR}/references/verify.md` and run the audit it defines against whatever is in context (a proposed plan, or the repo). Audit only when the user asked for it. For a code audit, prefer delegating to the `browncoat:design-auditor` agent when the Agent tool is available, so the sweep stays out of the main context.
 - `levels` — read `${CLAUDE_SKILL_DIR}/references/levels.md` for pitching or documenting a design at a given altitude, and `${CLAUDE_SKILL_DIR}/references/example.md` for one system drawn at every altitude.
 
 ## Precedence
@@ -33,7 +33,7 @@ Each arrow between boxes is a contract.
 
 ## Rules
 
-**Every box owns its own payload types.** The API request type is not the business-logic input. The database row type is not the API response. On day one they look identical; they always diverge. Sharing them welds the boxes together and kills independent evolution. Small value types — IDs, units — are shared vocabulary, not payloads, and every box may use them (see `eng:clean-code`).
+**Every box owns its own payload types.** The API request type is not the business-logic input. The database row type is not the API response. On day one they look identical; they always diverge. Sharing them welds the boxes together and kills independent evolution. Small value types — IDs, units — are shared vocabulary, not payloads, and every box may use them (see `browncoat:clean-code`).
 
 **Nothing leaks across an arrow.** Driver errors, SQL, ORM entities, and result sets stay inside the storage box. HTTP status codes, headers, request objects, and framework context types stay inside the exposure box. Business logic sees domain types only. A caller that imports a driver or client library just to inspect an error has already leaked — it pulls in a dependency it never calls.
 
@@ -47,7 +47,7 @@ The failure path is an arrow like any other, and it is the one most often left u
 
 Each box publishes one error type. It carries a message and, where callers genuinely need to act differently, a **reason** from a small enum the box owns. One type per box, not one per operation: per-operation types are too granular and force a branch at every call site. The box is the right grain.
 
-**Absence is not an error.** Not finding something is part of the method's contract: return an empty collection when looking for one or more, and an optional when looking for zero or one. Name them `find*` and `get*` respectively, per `eng:clean-code`.
+**Absence is not an error.** Not finding something is part of the method's contract: return an empty collection when looking for one or more, and an optional when looking for zero or one. Name them `find*` and `get*` respectively, per `browncoat:clean-code`.
 
 Classify at the boundary. Vendor codes, driver errors, and transport status codes are translated into the box's own error — its reason and its retry answer — inside the box that owns the technology. Put that classification in a reusable helper, not in the error type's ancestry — sharing by inheritance puts the driver's type into your contract and breaks backend swaps.
 
@@ -59,7 +59,7 @@ Wrap deliberately. Three categories, three answers:
 
 Preserve the cause. Keeping the underlying error reachable — cause chain, wrapped error, `source` — is not a leak: the box's error is the contract surface, the cause is diagnostic. Callers may unwrap for logging or a rare backend-specific decision, never in ordinary control flow. Across a process boundary the cause does not survive; the message, reasons, and retry advice do, so they have to stand on their own.
 
-Retry advice is part of every box's error contract: every error type implements the shared `Retryable` interface, which is the only retry signal callers use. Whether to retry, how long to wait, and whether the box retries internally are owned by the `eng:retry-contracts` skill — apply it alongside this one whenever a design has a failure path.
+Retry advice is part of every box's error contract: every error type implements the shared `Retryable` interface, which is the only retry signal callers use. Whether to retry, how long to wait, and whether the box retries internally are owned by the `browncoat:retry-contracts` skill — apply it alongside this one whenever a design has a failure path.
 
 ## Physical boundaries
 
@@ -90,7 +90,7 @@ Before proposing code for anything non-trivial, state the box breakdown. Keep it
 - name and responsibility
 - input type and output type
 - what it depends on
-- its error type, reasons, and retry advice (per `eng:retry-contracts`)
+- its error type, reasons, and retry advice (per `browncoat:retry-contracts`)
 - how it will be tested
 
 Then state **build order**. Leaf boxes (storage, external clients) are built first because they have no dependencies. Contracts at the edges are *defined* first even though the boxes are built last, because they are what other teams and parallel workstreams mock against. Call out explicitly which items are parallelizable and which are blocked. Integration is the final step.
@@ -99,7 +99,7 @@ Each box is a unit of work. Derive milestones from the blocked-by edges — a mi
 
 Where the work crosses a team or repo boundary, name the boundary and the contract that unblocks the other side.
 
-When the plan introduces or changes a boundary — a new box, remote dependency, storage, or failure path — hand the final draft to the `eng:design-auditor` agent once, before presenting it, when the Agent tool is available. Fold its findings into the plan. Skip this for discussion and for changes contained in one box.
+When the plan introduces or changes a boundary — a new box, remote dependency, storage, or failure path — hand the final draft to the `browncoat:design-auditor` agent once, before presenting it, when the Agent tool is available. Fold its findings into the plan. Skip this for discussion and for changes contained in one box.
 
 For the expected shape of a breakdown, see `${CLAUDE_SKILL_DIR}/references/example.md`.
 
